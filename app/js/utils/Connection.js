@@ -8,7 +8,7 @@ class Connection {
     conn = new WebSocket("ws://localhost:8080/ws?lastMod=143918dd9ce16851");
     conn.onclose = e => {
       console.log("Connection closed");
-      window.location.reload();
+      setTimeout(() => window.location.reload(), 2000);
     };
   }
 

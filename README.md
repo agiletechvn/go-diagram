@@ -25,6 +25,10 @@ yarn start
 
 cd ..
 yarn start <directory name>
+# run client in dev mode
+yarn client
+# build client
+yarn build-client
 ```
 
 ## Tech Stack

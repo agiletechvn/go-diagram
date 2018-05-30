@@ -3,7 +3,8 @@
     "version": "0.1.0",
     "scripts": {
         "start": "./start.sh",
-        "client": "cd app && yarn dev"
+        "client": "cd app && yarn dev",
+        "build-client": "cd app && yarn build"
     },
     "engines": {
         "node": ">=8.0.0",
