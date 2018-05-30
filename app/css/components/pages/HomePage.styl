@@ -1,0 +1,28 @@
+colorCurrentDirectoryBackground = #000
+colorHomeBackground = #333
+
+.HomePage
+  width 100%
+  height 100%
+  background-color colorHomeBackground
+  .current-directory
+    position absolute
+    left 0
+    top 0
+    margin homeComponentMargin
+    .input
+      background-color rgba(colorCurrentDirectoryBackground, 0.1)
+  .UMLDiagram
+    width 100%
+    height 100%
+  .search
+    position absolute
+    top 0
+    right 0
+    margin homeComponentMargin
+    width 200px
+  .bottom-right
+    position absolute
+    bottom homeComponentMargin
+    right homeComponentMargin
+
