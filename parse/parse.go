@@ -91,6 +91,7 @@ func GetStructsFile(fset *token.FileSet, f *ast.File, fname string, packageName 
 								// stpackage, stname = GetType(field.Type)
 								// fieldtype := Type{Literal: string(buf.Bytes()), Package: stpackage, Struct: stname}
 								stname, toNodes := GetTypes(field.Type, packageName)
+
 								fieldtype := Type{Literal: string(buf.Bytes()), Structs: stname}
 								fi := Field{Name: name.Name, Type: fieldtype}
 								fields = append(fields, fi)
@@ -135,18 +136,22 @@ func GetFileName(toNode *Node, pkgs []Package) string {
 			}
 		}
 	}
+
+	// fmt.Println(pkgs)
 	// Because we don't index types like funcs yet, those won't be found
 	// and we can't find the filename. Just leave it as is for now. TODO
 	fmt.Println("Matching file not found for struct", toNode.StructName, "(probably a library package)")
 	return ""
 }
 
+// package path and file set inside
 func getPackagesEdgesDirName(path string, fset *token.FileSet) ([]Package, []Edge, map[string]*ast.Package) {
 	var packages []Package
 	var edges []Edge
 	packagemap, err := parser.ParseDir(fset, path, nil, 0)
 	if err != nil {
-		panic(err)
+		fmt.Errorf("Error %s", err)
+		// panic(err)
 	}
 	for packagename, packageval := range packagemap {
 		// TODO ignore main for now because of conflicts
@@ -175,24 +180,24 @@ func pathInDirectories(path string, directories []string) bool {
 
 // Get Structs from a dirname
 // including vendor if needed
-func GetStructsDirName(path string) (*ClientStruct, map[string]*ast.Package) {
+func GetStructsDirName(paths []string) (*ClientStruct, map[string]*ast.Package) {
 	directories := []string{}
 	packages := []Package{}
 	edges := []Edge{}
 	pkgmap := map[string]*ast.Package{}
 	fset := token.NewFileSet()
-
-	directories = []string{path}
+	// directories = strings.Split(path, ",")
 	// Get all the directories, but not current app folder
-	filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
-		if f.IsDir() {
-			if !strings.Contains(path, "app") && !pathInDirectories(path, directories) {
-				directories = append(directories, path)
+	for _, dir := range paths {
+		filepath.Walk(dir, func(path string, f os.FileInfo, err error) error {
+			if f.IsDir() {
+				if !strings.Contains(path, "app") && !pathInDirectories(path, directories) {
+					directories = append(directories, path)
+				}
 			}
-		}
-		return nil
-	})
-	fmt.Printf("Process %d directories, %s\n", len(directories), directories)
+			return nil
+		})
+	}
 
 	for _, directory := range directories {
 		newpackages, newedges, newpkgmap := getPackagesEdgesDirName(directory, fset)
@@ -271,7 +276,8 @@ func GetTypes(node ast.Expr, packageName string) ([]string, []*Node) {
 	case *ast.ChanType:
 		return []string{"TODO"}, nil
 	default:
-		fmt.Println(reflect.TypeOf(node))
+		fmt.Printf("Error: %s", reflect.TypeOf(node))
+		// return []string{"TODO"}, nil
 		panic("Need to cover all Type Exprs")
 	}
 }
@@ -279,7 +285,7 @@ func GetTypes(node ast.Expr, packageName string) ([]string, []*Node) {
 // (path, packages) -> (Write to directory)
 // Given a client side struct data structure, deserialize it into an AST
 // and write to the given directory
-func WriteClientPackages(dirpath string, pkgs map[string]*ast.Package, clientpackages []Package) error {
+func WriteClientPackages(dirpaths []string, pkgs map[string]*ast.Package, clientpackages []Package) error {
 	var err error
 	for _, clientpackage := range clientpackages {
 		for _, clientfile := range clientpackage.Files {

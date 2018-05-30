@@ -5,10 +5,12 @@ let conn;
 class Connection {
   static setUp() {
     console.log("Initializing websockets...");
-    conn = new WebSocket("ws://localhost:8080/ws?lastMod=143918dd9ce16851");
+    conn = new WebSocket(
+      "ws://localhost:8080/ws?lastMod=" + new Date().getTime()
+    );
     conn.onclose = e => {
       console.log("Connection closed");
-      setTimeout(() => window.location.reload(), 2000);
+      // setTimeout(() => window.location.reload(), 2000);
     };
   }
 

@@ -1,6 +1,7 @@
 # go-diagram
 
 A UML diagram editor for Golang projects
+![Demo](godiagram.png)
 
 ## **Install the requirements**
 

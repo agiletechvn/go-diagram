@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"./parse"
@@ -40,7 +41,7 @@ const (
 
 var (
 	addr      = flag.String("addr", ":"+port, "http service address")
-	dirname   string
+	dirnames  []string
 	filenames []string
 	upgrader  = websocket.Upgrader{
 		ReadBufferSize:  1024,
@@ -63,7 +64,8 @@ func readFileIfModified(lastMod time.Time) (*parse.ClientStruct, time.Time, erro
 	for _, filename := range filenames {
 		fi, err := os.Stat(filename)
 		if err != nil || fi.ModTime().After(lastMod) {
-			fmt.Println("Detected file change", err)
+			// if err != nil {
+			fmt.Printf("Detected file change: %s, %s, %s \n", fi.ModTime(), lastMod, err)
 			return runParser(fi.ModTime(), err)
 		}
 	}
@@ -73,14 +75,19 @@ func readFileIfModified(lastMod time.Time) (*parse.ClientStruct, time.Time, erro
 func runParser(lastMod time.Time, err error) (*parse.ClientStruct, time.Time, error) {
 	// TODO handle error
 	var clientstruct *parse.ClientStruct
-	clientstruct, pkgs = parse.GetStructsDirName(dirname)
+	clientstruct, pkgs = parse.GetStructsDirName(dirnames)
 
 	// Set new files to watch
 	// TODO race conditions?
 	filenames = []string{}
 	for _, clientpkg := range clientstruct.Packages {
 		for _, clientfile := range clientpkg.Files {
-			filenames = append(filenames, clientfile.Name)
+			if strings.HasSuffix(clientfile.Name, "_test.go") {
+				// fmt.Printf("Ignore file: %s\n", clientfile.Name)
+			} else {
+				filenames = append(filenames, clientfile.Name)
+			}
+
 		}
 	}
 
@@ -104,7 +111,7 @@ func reader(ws *websocket.Conn) {
 			fmt.Println(err)
 			break
 		}
-		globError = parse.WriteClientPackages(dirname, pkgs, message.Packages)
+		globError = parse.WriteClientPackages(dirnames, pkgs, message.Packages)
 		fmt.Println("Received client packages")
 	}
 }
@@ -161,8 +168,9 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var lastMod time.Time
-	if n, err := strconv.ParseInt(r.FormValue("lastMod"), 16, 64); err != nil {
-		lastMod = time.Unix(0, n)
+
+	if n, err := strconv.ParseInt(r.FormValue("lastMod"), 10, 64); err == nil {
+		lastMod = time.Unix(0, n*int64(time.Millisecond))
 	}
 
 	go writer(ws, lastMod)
@@ -171,10 +179,11 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
-	if flag.NArg() != 1 {
+	if flag.NArg() < 1 {
 		log.Fatal("dirname not specified")
 	}
-	dirname = flag.Args()[0]
+	dirnames = flag.Args()
+
 	http.Handle("/", http.FileServer(http.Dir("./app/build")))
 	http.HandleFunc("/ws", serveWs)
 	fmt.Println("Listening on http://localhost:" + port)
