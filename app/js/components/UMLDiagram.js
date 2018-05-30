@@ -67,7 +67,7 @@ class UMLDiagram extends Component {
       }
     };
     this.gopath = "";
-    const match = window.location.search.match(/gopath=(.*?)\/?$/);
+    const match = window.location.search.match(/gopath=(.*?)\/?(?:&|$)/);
     if (match) {
       this.gopath = match[1] + "/src/" || "";
     }
@@ -96,71 +96,73 @@ class UMLDiagram extends Component {
     // Create the package innards
     let selection = this.state.selection;
 
-    let packages = this.props.data.packages.map(pkg => {
-      return (
-        <section
-          ref={getPackageRef(pkg)}
-          key={pkg.name}
-          className={[
-            "package",
-            selection.pkg === pkg.name ? "selected" : ""
-          ].join(" ")}
-          onClick={this.onPackageClick.bind(this, pkg)}
-        >
-          <h3 className="title">{pkg.name}</h3>
-          {pkg.files.filter(file => file.structs.length).map(file => {
-            //ref={getFileRef(pkg, file)}
-            return (
-              <div
-                ref={getFileRef(pkg, file)}
-                key={file.name}
-                className={[
-                  "file",
-                  selection.file === file.name ? "selected" : ""
-                ].join(" ")}
-                onClick={this.onFileClick.bind(this, {
-                  pkg: pkg,
-                  file: file
-                })}
-              >
-                <h3 className="title">{this.shorten(file.name)}</h3>
-                <Button
-                  className="addStruct"
-                  value="+"
-                  onClick={this.addStruct.bind(this, {
-                    package: pkg.name,
-                    file: file.name
+    let packages = this.props.data.packages
+      .filter(pkg => pkg.files.length)
+      .map(pkg => {
+        return (
+          <section
+            ref={getPackageRef(pkg)}
+            key={pkg.name}
+            className={[
+              "package",
+              selection.pkg === pkg.name ? "selected" : ""
+            ].join(" ")}
+            onClick={this.onPackageClick.bind(this, pkg)}
+          >
+            <h3 className="title">{pkg.name}</h3>
+            {pkg.files.filter(file => file.structs.length).map(file => {
+              //ref={getFileRef(pkg, file)}
+              return (
+                <div
+                  ref={getFileRef(pkg, file)}
+                  key={file.name}
+                  className={[
+                    "file",
+                    selection.file === file.name ? "selected" : ""
+                  ].join(" ")}
+                  onClick={this.onFileClick.bind(this, {
+                    pkg: pkg,
+                    file: file
                   })}
-                />
-                {file.structs.map(struct => {
-                  return (
-                    <Struct
-                      className={getStructRef(pkg, file, struct)}
-                      ref={getStructRef(pkg, file, struct)}
-                      key={struct.name}
-                      package={pkg.name}
-                      file={file.name}
-                      onDelete={this.props.actions.deleteStruct}
-                      onNameChange={this.props.actions.changeStructName}
-                      onFieldTypeChange={
-                        this.props.actions.changeStructFieldType
-                      }
-                      onFieldNameChange={
-                        this.props.actions.changeStructFieldName
-                      }
-                      onAddField={this.props.actions.addStructField}
-                      onRemoveField={this.props.actions.removeStructField}
-                      name={struct.name}
-                      fields={struct.fields}
-                    />
-                  );
-                })}
-              </div>
-            );
-          })}
-        </section>
-      );
-    });
+                >
+                  <h3 className="title">{this.shorten(file.name)}</h3>
+                  <Button
+                    className="addStruct"
+                    value="+"
+                    onClick={this.addStruct.bind(this, {
+                      package: pkg.name,
+                      file: file.name
+                    })}
+                  />
+                  {file.structs.map(struct => {
+                    return (
+                      <Struct
+                        className={getStructRef(pkg, file, struct)}
+                        ref={getStructRef(pkg, file, struct)}
+                        key={struct.name}
+                        package={pkg.name}
+                        file={file.name}
+                        onDelete={this.props.actions.deleteStruct}
+                        onNameChange={this.props.actions.changeStructName}
+                        onFieldTypeChange={
+                          this.props.actions.changeStructFieldType
+                        }
+                        onFieldNameChange={
+                          this.props.actions.changeStructFieldName
+                        }
+                        onAddField={this.props.actions.addStructField}
+                        onRemoveField={this.props.actions.removeStructField}
+                        name={struct.name}
+                        fields={struct.fields}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </section>
+        );
+      });
 
     let getXY = fieldOrStruct => {
       //if (!fieldTypeName) {

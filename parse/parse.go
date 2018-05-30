@@ -159,6 +159,9 @@ func getPackagesEdgesDirName(path string, fset *token.FileSet) ([]Package, []Edg
 		if packagename != "main" {
 			files := []File{}
 			for fname, f := range packageval.Files {
+				if strings.HasSuffix(fname, "_test.go") {
+					continue
+				}
 				newfile, newedges := GetStructsFile(fset, f, fname, packagename)
 				files = append(files, newfile)
 				edges = append(edges, newedges...)
@@ -213,7 +216,7 @@ func GetStructsDirName(paths []string) (*ClientStruct, map[string]*ast.Package) 
 	// Here we fill in what the filename is
 	validedges := []Edge{}
 	for _, edge := range edges {
-		if name := GetFileName(edge.To, packages); name != "" {
+		if name := GetFileName(edge.To, packages); name != "" && !strings.HasSuffix(name, "_test.go") {
 			edge.To.FileName = name
 			validedges = append(validedges, edge)
 		}
@@ -289,6 +292,11 @@ func WriteClientPackages(dirpaths []string, pkgs map[string]*ast.Package, client
 	var err error
 	for _, clientpackage := range clientpackages {
 		for _, clientfile := range clientpackage.Files {
+
+			if strings.HasSuffix(clientfile.Name, "_test.go") {
+				continue
+			}
+
 			packagename := clientpackage.Name
 			packageast := pkgs[packagename]
 			// Get the AST with the matching file name
