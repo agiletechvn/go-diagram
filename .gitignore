@@ -102,3 +102,4 @@ js/bundle.js
 js/bundle.min.js
 build
 npm-debug.log
+package-lock.json 
