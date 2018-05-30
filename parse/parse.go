@@ -174,7 +174,7 @@ func GetStructsDirName(path string) (*ClientStruct, map[string]*ast.Package) {
 	fset := token.NewFileSet()
 
 	directories = []string{path}
-	// Get all the directories
+	// Get all the directories, but not current app folder
 	filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
 		if f.IsDir() {
 			if !strings.Contains(path, "app") {
