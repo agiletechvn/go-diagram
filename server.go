@@ -17,8 +17,8 @@ import (
 
 	"runtime"
 
+	"./parse"
 	"github.com/gorilla/websocket"
-	"github.com/grant/go-diagram/parse"
 )
 
 type ClientError struct {
@@ -184,7 +184,7 @@ func main() {
 
 	switch runtime.GOOS {
 	case "linux":
-		exec.Command("x-www-browser", "http://localhost:"+port).Run()
+		exec.Command("xdg-open", "http://localhost:"+port).Run()
 	case "windows":
 		exec.Command("explorer", "http://localhost:"+port).Run()
 	default:
