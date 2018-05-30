@@ -2,6 +2,14 @@
 
 A UML diagram editor for Golang projects
 
+## **Install the requirements**
+
+**Install nodemon**
+
+```sh
+yarn global add nodemon
+```
+
 ## Setup
 
 Make sure your `PATH` includes `:$GOPATH/bin`
@@ -16,7 +24,7 @@ yarn build
 yarn start
 
 cd ..
-go run server.go <directory name>
+yarn start <directory name>
 ```
 
 ## Tech Stack

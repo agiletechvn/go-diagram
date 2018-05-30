@@ -11,11 +11,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/exec"
 	"strconv"
 	"time"
-
-	"runtime"
 
 	"./parse"
 	"github.com/gorilla/websocket"
@@ -182,14 +179,16 @@ func main() {
 	http.HandleFunc("/ws", serveWs)
 	fmt.Println("Listening on http://localhost:" + port)
 
-	switch runtime.GOOS {
-	case "linux":
-		exec.Command("xdg-open", "http://localhost:"+port).Run()
-	case "windows":
-		exec.Command("explorer", "http://localhost:"+port).Run()
-	default:
-		exec.Command("open", "http://localhost:"+port).Run()
-	}
+	// open webpage automatically
+	// switch runtime.GOOS {
+	// case "linux":
+	// 	exec.Command("xdg-open", "http://localhost:"+port).Run()
+	// case "windows":
+	// 	exec.Command("explorer", "http://localhost:"+port).Run()
+	// default:
+	// 	exec.Command("open", "http://localhost:"+port).Run()
+	// }
+
 	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal(err)
 	}

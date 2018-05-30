@@ -164,6 +164,8 @@ func getPackagesEdgesDirName(path string, fset *token.FileSet) ([]Package, []Edg
 	return packages, edges, packagemap
 }
 
+// Get Structs from a dirname
+// including vendor if needed
 func GetStructsDirName(path string) (*ClientStruct, map[string]*ast.Package) {
 	directories := []string{}
 	packages := []Package{}
@@ -184,6 +186,7 @@ func GetStructsDirName(path string) (*ClientStruct, map[string]*ast.Package) {
 	fmt.Printf("Process %d directories\n", len(directories))
 
 	for _, directory := range directories {
+		fmt.Printf("Process directory %s\n", directory)
 		newpackages, newedges, newpkgmap := getPackagesEdgesDirName(directory, fset)
 		// Merge the packages, edges, and pkgmap from this directory with our other results
 		packages = append(packages, newpackages...)
@@ -344,7 +347,7 @@ func clientFileToDecls(clientfile File) ([]ast.Decl, error) {
 				return nil, err
 			}
 			field := ast.Field{
-				Names: []*ast.Ident{&ast.Ident{Name: clientfield.Name}},
+				Names: []*ast.Ident{{Name: clientfield.Name}},
 				Type:  parsedtype}
 			fieldList = append(fieldList, &field)
 		}
