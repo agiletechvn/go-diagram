@@ -2,7 +2,8 @@
     "name": "go-diagram",
     "version": "0.1.0",
     "scripts": {
-        "start": "./start.sh"
+        "start": "./start.sh",
+        "client": "cd app && yarn dev"
     },
     "engines": {
         "node": ">=8.0.0",

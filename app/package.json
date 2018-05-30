@@ -73,7 +73,7 @@
         "start": "cross-env NODE_ENV=development node server.js",
         "build": "webpack --config webpack.config.js --progress --colors -p",
         "dev":
-            "webpack --watch --progress --profile --colors --hot --config webpack.config.js",
+            "webpack-dev-server --host 0.0.0.0 --port 3000 --watch --progress --profile --colors --hot --config webpack.config.js",
         "serve": "node server.js"
     },
     "author": "Grant Timmerman and Anwell Wang",

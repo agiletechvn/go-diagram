@@ -3,24 +3,27 @@
  * This is the first thing users see of our App
  */
 
-import { asyncChangeProjectName, asyncChangeOwnerName } from '../../actions/AppActions';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Link } from 'react-router';
-import Struct from '../Struct';
-import UMLDiagram from '../UMLDiagram';
-import SearchBox from '../SearchBox';
-import MiniMap from '../MiniMap';
-import Button from '../Button';
-import * as AppActions from '../../actions/AppActions';
-import { bindActionCreators } from 'redux';
-import Connection from '../../utils/Connection';
+import {
+  asyncChangeProjectName,
+  asyncChangeOwnerName
+} from "../../actions/AppActions";
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import { Link } from "react-router";
+import Struct from "../Struct";
+import UMLDiagram from "../UMLDiagram";
+import SearchBox from "../SearchBox";
+import MiniMap from "../MiniMap";
+import Button from "../Button";
+import * as AppActions from "../../actions/AppActions";
+import { bindActionCreators } from "redux";
+import Connection from "../../utils/Connection";
 
 class HomePage extends Component {
   static get defaultProps() {
     return {
       actions: {},
-      data: {},
+      data: {}
     };
   }
 
@@ -42,25 +45,18 @@ class HomePage extends Component {
   }
 
   render() {
-    const {
-      projectName,
-      ownerName,
-      packageData,
-      } = this.props.data;
+    const { projectName, ownerName, packageData } = this.props.data;
 
     return (
-      <div className='HomePage'>
+      <div className="HomePage">
         {/*<SearchBox
          className='current-directory'
          value='~/cse404/'
          placeholder='project directory...'
          />*/}
-        <UMLDiagram
-          actions={this.props.actions}
-          data={packageData}
-        />
+        <UMLDiagram actions={this.props.actions} data={packageData} />
         {/*<SearchBox className='search' />*/}
-        <div className='bottom-right'>
+        <div className="bottom-right">
           {/*<MiniMap
            data={packageData}
            />*/}

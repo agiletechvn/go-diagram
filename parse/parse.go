@@ -164,6 +164,15 @@ func getPackagesEdgesDirName(path string, fset *token.FileSet) ([]Package, []Edg
 	return packages, edges, packagemap
 }
 
+func pathInDirectories(path string, directories []string) bool {
+	for _, directory := range directories {
+		if path == directory {
+			return true
+		}
+	}
+	return false
+}
+
 // Get Structs from a dirname
 // including vendor if needed
 func GetStructsDirName(path string) (*ClientStruct, map[string]*ast.Package) {
@@ -177,16 +186,15 @@ func GetStructsDirName(path string) (*ClientStruct, map[string]*ast.Package) {
 	// Get all the directories, but not current app folder
 	filepath.Walk(path, func(path string, f os.FileInfo, err error) error {
 		if f.IsDir() {
-			if !strings.Contains(path, "app") {
+			if !strings.Contains(path, "app") && !pathInDirectories(path, directories) {
 				directories = append(directories, path)
 			}
 		}
 		return nil
 	})
-	fmt.Printf("Process %d directories\n", len(directories))
+	fmt.Printf("Process %d directories, %s\n", len(directories), directories)
 
 	for _, directory := range directories {
-		fmt.Printf("Process directory %s\n", directory)
 		newpackages, newedges, newpkgmap := getPackagesEdgesDirName(directory, fset)
 		// Merge the packages, edges, and pkgmap from this directory with our other results
 		packages = append(packages, newpackages...)

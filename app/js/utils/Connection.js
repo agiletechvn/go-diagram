@@ -4,11 +4,12 @@
 let conn;
 class Connection {
   static setUp() {
-    console.log('Initializing websockets...');
+    console.log("Initializing websockets...");
     conn = new WebSocket("ws://localhost:8080/ws?lastMod=143918dd9ce16851");
     conn.onclose = e => {
-      console.log('Connection closed');
-    }
+      console.log("Connection closed");
+      window.location.reload();
+    };
   }
 
   static onMessage(callback) {
