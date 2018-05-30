@@ -2,6 +2,7 @@
     "name": "go-diagram",
     "version": "0.1.0",
     "scripts": {
+        "install-client": "cd app && yarn",
         "start": "./start.sh",
         "client": "cd app && yarn dev",
         "build-client": "cd app && yarn build"

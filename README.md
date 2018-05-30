@@ -16,19 +16,15 @@ Make sure your `PATH` includes `:$GOPATH/bin`
 
 ```sh
 glide install
+# install client dependencies
+yarn install-client
+# build client
+yarn build-client
 
-cd app
-yarn
-yarn build
-# dev mode
-yarn start
-
-cd ..
+# start server in hot-reload mode
 yarn start <directory name>
 # run client in dev mode
 yarn client
-# build client
-yarn build-client
 ```
 
 ## Tech Stack
