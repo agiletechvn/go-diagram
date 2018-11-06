@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strings"
+
 	//"golang.org/x/tools/go/ast/astutil"
 	"bytes"
 )
@@ -272,6 +273,16 @@ func GetTypes(node ast.Expr, packageName string) ([]string, []*Node) {
 		return GetTypes(node.(*ast.MapType).Key, packageName)
 	case *ast.StarExpr:
 		return GetTypes(node.(*ast.StarExpr).X, packageName)
+	case *ast.StructType:
+		astStruct := node.(*ast.StructType)
+		var nodeNames []string
+		var nodes []*Node
+		for _, field := range astStruct.Fields.List {
+			a, b := GetTypes(field.Type, packageName)
+			nodeNames = append(nodeNames, a...)
+			nodes = append(nodes, b...)
+		}
+		return nodeNames, nodes
 	case *ast.FuncType:
 		return []string{"TODO"}, nil
 	case *ast.InterfaceType:
